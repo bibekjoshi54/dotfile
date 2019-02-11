@@ -20,6 +20,7 @@ Plugin 'Toggle'
 Plugin 'fugitive.vim'
 Plugin 'The-NERD-Commenter'
 Plugin 'The-NERD-tree'
+Plugin 'Xuyuanp/nerdtree-git-plugin'
 Plugin 'davidhalter/jedi-vim'
 " Bundle "MarcWeber/vim-addon-mw-utils"
 "# Bundle "garbas/vim-snipmate"
@@ -39,14 +40,13 @@ Plugin 'tmhedberg/SimpylFold'
 Plugin 'vim-scripts/indentpython.vim'
 Plugin 'Lokaltog/powerline'                 " Powerline fonts plugin
 Plugin 'flazz/vim-colorschemes'             " Colorschemes
-" Plugin 'kristijanhusak/vim-hybrid-material'
+Plugin 'klen/python-mode'
 call vundle#end()            " required
 
 call plug#begin('~/.vim/plugged')
 Plug 'hzchirs/vim-material'
 " Initialize plugin system
 call plug#end()
-:let mapleader = ","
 filetype plugin indent on    " required
 map <Leader>v :source $MYVIMRC<CR>:!ctags<CR><CR>:PluginInstall<CR>q<CR>
 "define BadWhitespace before using in a match
@@ -88,7 +88,6 @@ nnoremap <C-H> <C-W><C-H>
 let g:SimpylFold_docstring_preview=1 "Shows the docstring for the folded code
 
 set encoding=utf-8
-
 let python_highlight_all=1
 syntax on
 
@@ -99,11 +98,10 @@ set hls             " highlight searches
 set ruler           " show the cursor position all the time
 set number          " show line numbers
 set ttyfast         " smoother changes
-:let mapleader = ","
 
 set expandtab       " space instead of tab
 set nowrap          " don't wrap lines, let them continue
-set omnifunc=syntaxcomplete#Complete " set autocomplete
+" set omnifunc=syntaxcomplete#Complete " set autocomplete"
 set completeopt-=preview " don't open scratch pad
 
 " make the 81st column stand out
@@ -157,6 +155,29 @@ let g:airline_theme='material'
 let g:airline#extensions#tabline#enabled=1
 let g:airline#extensions#tabline#formatter='unique_tail'
 let g:airline_powerline_fonts=1
+" Enable the list of buffers
+let g:airline#extensions#tabline#enabled = 1
+
+" Show just the filename
+let g:airline#extensions#tabline#fnamemod = ':t'
+
+" To open a new empty buffer
+" This replaces :tabnew which I used to bind to this mapping
+nmap <leader>T :enew<cr>
+
+" Move to the next buffer
+nmap <leader>l :bnext<CR>
+
+" Move to the previous buffer
+nmap <leader>h :bprevious<CR>
+
+" Close the current buffer and move to the previous one
+" This replicates the idea of closing a tab
+nmap <leader>bq :bp <BAR> bd #<CR>
+
+" Show all open buffers and their status
+nmap <leader>bl :ls<CR>
+
 """""""""""""""""""""""""""""""""""""""""""""""""""""""
 
 " Palenight
@@ -223,9 +244,69 @@ nnoremap <Leader>s <C-w>s<C-w>j
 let g:jedi#force_py_version = 3
 
 " NERDTree setting defaults to work around http://github.com/scrooloose/nerdtree/issues/489
+"=====================================================
+"" NERDTree settings
+"=====================================================
+let NERDTreeIgnore=['\.pyc$', '\.pyo$', '__pycache__$']     " Ignore files in NERDTree
+let NERDTreeWinSize=40
+autocmd VimEnter * if !argc() | NERDTree | endif  " Load NERDTree only if vim is run without arguments
+nmap " :NERDTreeToggle<CR>
 let g:NERDTreeDirArrows = 1
 let g:NERDTreeDirArrowExpandable = '▸'
 let g:NERDTreeDirArrowCollapsible = '▾'
 let g:NERDTreeGlyphReadOnly = "RO"
 let NERDTreeMinimalUI = 1
 
+" Autocompletiom setting
+let g:jedi#goto_assignments_command = "<leader>g"
+let g:jedi#goto_definitions_command = "<leader>d"
+let g:jedi#documentation_command = "K"
+let g:jedi#usages_command = "<leader>n"
+let g:jedi#completions_command = "<C-f>"
+let g:jedi#rename_command = "<leader>r"
+let g:jedi#show_call_signatures = "1"
+
+"=====================================================
+"" TagBar settings
+"=====================================================
+let g:tagbar_autofocus=0
+let g:tagbar_width=42
+autocmd BufEnter *.py :call tagbar#autoopen(0)
+autocmd BufWinLeave *.py :TagbarClose
+
+" syntastic
+let g:syntastic_always_populate_loc_list=1
+let g:syntastic_auto_loc_list=1
+let g:syntastic_enable_signs=1
+let g:syntastic_check_on_wq=0
+let g:syntastic_aggregate_errors=1
+let g:syntastic_loc_list_height=5
+let g:syntastic_error_symbol='X'
+let g:syntastic_style_error_symbol='X'
+let g:syntastic_warning_symbol='x'
+let g:syntastic_style_warning_symbol='x'
+let g:syntastic_python_checkers=['python']
+
+" syntax highlight
+" code running
+let g:pymode_run=1
+let g:pymode_run_bind='<F5>'
+
+" Additional mappings for Esc (useful for MacBook with touch bar)
+" inoremap jj <Esc>
+" inoremap jk <Esc>
+
+let g:NERDTreeIndicatorMapCustom = {
+    \ "Modified"  : "✹",
+    \ "Staged"    : "✚",
+    \ "Untracked" : "✭",
+    \ "Renamed"   : "➜",
+    \ "Unmerged"  : "═",
+    \ "Deleted"   : "✖",
+    \ "Dirty"     : "✗",
+    \ "Clean"     : "✔︎",
+    \ 'Ignored'   : '☒',
+    \ "Unknown"   : "?"
+    \ }
+let NERDTreeQuitOnOpen = 1
+:set mouse=a
